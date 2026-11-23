@@ -1,0 +1,324 @@
+/* Layout: filter panel | resizer | gallery (the map + right panel of the risk map). */
+.layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--left-w, 286px) 8px minmax(0, 1fr);
+  min-height: 0;
+  padding: 8px 8px 0;
+}
+@media (min-width: 1700px) {
+  .layout {
+    grid-template-columns: var(--left-w, 306px) 10px minmax(0, 1fr);
+  }
+}
+@media (max-width: 1190px) and (min-width: 901px) {
+  .layout {
+    grid-template-columns: var(--left-w, 252px) 8px minmax(0, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 8px;
+  }
+  .layout > aside {
+    max-height: 40vh;
+  }
+  .layout > [role="separator"] {
+    display: none;
+  }
+}
+
+/* Header: place + reset. */
+.toolbarActions {
+  grid-template-columns: minmax(180px, 240px) auto;
+  flex: 0 1 auto;
+}
+
+/* Gallery */
+.gallery {
+  min-height: 0;
+}
+.galleryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e8edf2;
+  flex-shrink: 0;
+}
+.galleryHead h2 {
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.galleryHead > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: #6c8195;
+  font-size: 11px;
+}
+.empty {
+  padding: 40px 16px;
+  color: #6c8195;
+  font-size: 12px;
+  text-align: center;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  align-content: start;
+  gap: 12px;
+  min-height: 0;
+  padding: 14px 16px 18px;
+  overflow-y: auto;
+  list-style: none;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 1px solid #e1e8f0;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  text-align: left;
+  cursor: zoom-in;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.card:hover {
+  border-color: #aabfd2;
+  box-shadow: 0 6px 16px #142b4214;
+  transform: translateY(-1px);
+}
+.card:focus-visible {
+  outline: 2px solid #b58c42;
+  outline-offset: 2px;
+}
+.thumb {
+  display: block;
+  aspect-ratio: 1.41;
+  background: #f4f6f8;
+  border-bottom: 1px solid #edf1f5;
+}
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px 11px 11px;
+}
+.cardText strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: #1b344c;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.cardText > span {
+  color: #778b9e;
+  font-size: 10.5px;
+}
+
+/* Viewer */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 22, 35, 0.94);
+  color: #fff;
+}
+.viewerHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 20px;
+  border-bottom: 1px solid #ffffff1f;
+}
+.viewerHead > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.viewerHead strong {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.viewerHead > div > span {
+  color: #a9b8c8;
+  font-size: 11px;
+}
+.viewerCount {
+  color: #a9b8c8;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.viewerButton {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ffffff2e;
+  border-radius: 7px;
+  background: #ffffff12;
+  color: #fff;
+  cursor: pointer;
+}
+.viewerButton:hover {
+  background: #ffffff24;
+}
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  cursor: zoom-in;
+  touch-action: none;
+}
+.stage[data-zoomed="true"] {
+  cursor: grab;
+}
+.stage[data-zoomed="true"]:active {
+  cursor: grabbing;
+}
+.stageInner {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+.stageThumb,
+.stageImg {
+  position: absolute;
+  inset: 12px 60px;
+  width: calc(100% - 120px);
+  height: calc(100% - 24px);
+  object-fit: contain;
+  user-select: none;
+}
+.stageImg {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.stageImg[data-loaded="true"] {
+  opacity: 1;
+}
+.stageSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border: 2px solid #ffffff33;
+  border-top-color: #e5bf70;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.zoomBar {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #ffffff2e;
+  border-radius: 8px;
+  background: rgba(20, 43, 66, 0.9);
+  transform: translateX(-50%);
+  cursor: default;
+}
+.zoomBar > button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+.zoomBar > button:hover {
+  background: #ffffff1f;
+}
+.zoomBar > span {
+  min-width: 46px;
+  padding: 0 6px;
+  color: #c6d3e0;
+  font-size: 11px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.viewerNav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 64px;
+  margin-top: -4px;
+  border: 1px solid #ffffff2e;
+  border-radius: 8px;
+  background: rgba(20, 43, 66, 0.75);
+  color: #fff;
+  cursor: pointer;
+}
+.viewerNav:hover {
+  background: rgba(20, 43, 66, 0.95);
+}
+.viewerPrev {
+  left: 10px;
+}
+.viewerPrev > svg {
+  transform: rotate(180deg);
+}
+.viewerNext {
+  right: 10px;
+}
+@media (max-width: 700px) {
+  .stageThumb,
+  .stageImg {
+    inset: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+  }
+  .viewerNav {
+    width: 34px;
+    height: 48px;
+  }
+}

@@ -1,0 +1,70 @@
+:root {
+  --bg: #f0f3f6;
+  --fg: #24364a;
+  --header-bg: #142b42;
+  --header-fg: #ffffff;
+  --accent: #c49a4b;
+  --muted: #9fb3c8;
+  --header-h: 68px;
+  --border: #e5eaf0;
+  --text-muted: #6b7b8d;
+  /* The CSS build rewrites Calcite's light-dark() colours into
+     var(--lightningcss-light, …) var(--lightningcss-dark, …). Without these two
+     switches every Calcite colour is invalid and map widgets turn transparent. */
+  color-scheme: light;
+  --lightningcss-light: initial;
+  --lightningcss-dark: ;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--fg);
+  background: var(--bg);
+  font-family: var(--font-geist-sans), "Segoe UI", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button,
+input,
+select,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+:focus-visible {
+  outline: 2px solid #b58c42;
+  outline-offset: 3px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd4dd transparent;
+}
+::selection {
+  background: #dce7f0;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
