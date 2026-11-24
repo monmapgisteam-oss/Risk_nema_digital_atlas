@@ -22,6 +22,7 @@ import PanelResizer from "./PanelResizer";
 import AtlasPanel from "./AtlasPanel";
 import Gallery from "./Gallery";
 import Viewer from "./Viewer";
+import UploadDialog from "./UploadDialog";
 import dash from "./Dashboard.module.css";
 import styles from "./Atlas.module.css";
 
@@ -53,6 +54,7 @@ export default function Atlas() {
   const [headerSlot] = useState(() => document.getElementById("header-slot"));
   /** Maps added from this computer, with object URLs of their files. */
   const [local, setLocal] = useState<LocalEntry[]>([]);
+  const [uploading, setUploading] = useState(false);
   const urls = useRef(new Map<string, string>());
 
   const toEntry = useCallback((rec: LocalMapRecord): LocalEntry => {
@@ -61,10 +63,19 @@ export default function Atlas() {
     return { rec, item: toAtlasItem(rec, url) };
   }, []);
 
-  /** Shows maps just saved by the upload dialog. */
+  /** Shows maps just saved by the upload dialog, in the view they belong to. */
   const addLocal = useCallback(
-    (recs: LocalMapRecord[]) =>
-      setLocal((cur) => [...cur, ...recs.map(toEntry)]),
+    (recs: LocalMapRecord[]) => {
+      setLocal((cur) => [...cur, ...recs.map(toEntry)]);
+      const r = recs[recs.length - 1];
+      setOpen(null);
+      setFilters({
+        mode: r.kind,
+        topic: r.kind === "hz" ? "" : r.topic,
+        hazard: r.hazard ?? "all",
+        scope: r.scope,
+      });
+    },
     [toEntry],
   );
 
@@ -223,6 +234,16 @@ export default function Atlas() {
         <button
           type="button"
           className={dash.headerReset}
+          onClick={() => setUploading(true)}
+          disabled={!manifest}
+          title="Компьютерээс газрын зураг нэмэх"
+        >
+          <Icon name="upload" size={15} />
+          Зураг оруулах
+        </button>
+        <button
+          type="button"
+          className={dash.headerReset}
           onClick={reset}
           aria-label="Бүх шүүлтүүрийг цэвэрлэх"
           title="Бүх шүүлтүүрийг цэвэрлэх"
@@ -295,6 +316,15 @@ export default function Atlas() {
           PwC · ENVIRON
         </span>
       </footer>
+      {uploading && manifest && (
+        <UploadDialog
+          topics={manifest.topics}
+          aimags={manifest.aimags}
+          initial={{ ...filters, topic }}
+          onDone={addLocal}
+          onClose={() => setUploading(false)}
+        />
+      )}
       {open != null && items[open] && (
         <Viewer
           items={items}

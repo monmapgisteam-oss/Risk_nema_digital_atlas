@@ -32,8 +32,168 @@
 
 /* Header: place + reset. */
 .toolbarActions {
-  grid-template-columns: minmax(180px, 240px) auto;
+  grid-template-columns: minmax(180px, 240px) auto auto;
   flex: 0 1 auto;
+}
+.toolbarActions > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Upload dialog */
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: #0b1a2a8c;
+}
+.dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(480px, 100%);
+  max-height: calc(100vh - 32px);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 20px 50px #0b1a2a40;
+  overflow: hidden;
+}
+.dialogHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8edf2;
+}
+.dialogHead h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1b344c;
+  font-size: 14px;
+  font-weight: 600;
+}
+.dialogClose {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #5b6f83;
+  cursor: pointer;
+}
+.dialogClose:hover {
+  background: #f0f3f6;
+}
+.dialogBody {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  overflow-y: auto;
+}
+.dropZone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 16px;
+  border: 1.5px dashed #c5d2de;
+  border-radius: 8px;
+  background: #fafbfc;
+  color: #5b6f83;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.dropZone:hover,
+.dropZone[data-dragging="true"],
+.dropZone:focus-within {
+  border-color: #b58c42;
+  background: #fbf7ef;
+}
+.dropZone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.dropZone strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: #1b344c;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dropZone span {
+  font-size: 11px;
+}
+.dialogRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 480px) {
+  .dialogRow {
+    grid-template-columns: 1fr;
+  }
+}
+.dialogNotice {
+  color: #2e7d4f;
+  font-size: 12px;
+}
+.dialogErrors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #fdf0ee;
+  color: #a5321f;
+  font-size: 11.5px;
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+.dialogFoot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #e8edf2;
+}
+.dialogSecondary,
+.dialogPrimary {
+  min-height: 34px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dialogSecondary {
+  border: 1px solid #dbe2ea;
+  background: #fff;
+  color: #486077;
+}
+.dialogPrimary {
+  border: 1px solid transparent;
+  background: var(--header-bg);
+  color: #fff;
+}
+.dialogPrimary:disabled,
+.dialogSecondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Gallery */
