@@ -4,6 +4,7 @@ export const ICON_PATHS = {
   close: "M6 6l12 12M18 6 6 18",
   download: "M12 3v12m-5-5 5 5 5-5M4 21h16",
   upload: "M12 21V9m-5 5 5-5 5 5M4 3h16",
+  trash: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6",
   image: "M3 5h18v14H3V5Zm0 11 5-5 4 4 3-3 6 6M15 9h.01",
   globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-9-9h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9Z",
   label:

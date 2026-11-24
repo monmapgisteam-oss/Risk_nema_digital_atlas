@@ -7,6 +7,7 @@ import {
   compareItems,
   hazardLabel,
   matchesMode,
+  matchesSearch,
   type AtlasItem,
   type Manifest,
   type Mode,
@@ -55,6 +56,8 @@ export default function Atlas() {
   /** Maps added from this computer, with object URLs of their files. */
   const [local, setLocal] = useState<LocalEntry[]>([]);
   const [uploading, setUploading] = useState(false);
+  /** Header search by map name; empty = use the filters. */
+  const [query, setQuery] = useState("");
   const urls = useRef(new Map<string, string>());
 
   const toEntry = useCallback((rec: LocalMapRecord): LocalEntry => {
@@ -151,27 +154,34 @@ export default function Atlas() {
       .sort((a, b) => a[1].localeCompare(b[1], "mn"));
   }, [base, manifest]);
 
+  const searching = query.trim() !== "";
   const items = useMemo(
     () =>
-      base
-        .filter(
-          (i) =>
-            (filters.hazard === "all" || i.hazard === filters.hazard) &&
-            (filters.scope === "all" ||
-              (filters.scope === "aimag"
-                ? i.scope !== "MN"
-                : i.scope === filters.scope)),
-        )
-        .sort(compareItems),
-    [base, filters.hazard, filters.scope],
+      // A search looks through the whole atlas, not only the chosen view.
+      (searching
+        ? [...(manifest?.items ?? []), ...local.map((l) => l.item)].filter(
+            (i) => i.mn && matchesSearch(i, query),
+          )
+        : base.filter(
+            (i) =>
+              (filters.hazard === "all" || i.hazard === filters.hazard) &&
+              (filters.scope === "all" ||
+                (filters.scope === "aimag"
+                  ? i.scope !== "MN"
+                  : i.scope === filters.scope)),
+          )
+      ).sort(compareItems),
+    [searching, query, manifest, local, base, filters.hazard, filters.scope],
   );
 
   const update = (patch: Partial<AtlasFilters>) => {
     setOpen(null);
+    setQuery("");
     setFilters((cur) => ({ ...cur, ...patch }));
   };
   const reset = () => {
     setOpen(null);
+    setQuery("");
     setFilters(START);
   };
 
@@ -208,7 +218,22 @@ export default function Atlas() {
         </nav>
       </div>
       <div className={`${dash.toolbarActions} ${styles.toolbarActions}`}>
-        <label className={dash.locationField}>
+        <label className={`${dash.locationField} ${styles.searchField}`}>
+          <span>
+            <Icon name="search" size={14} />
+            Зургийн нэрээр хайх
+          </span>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => {
+              setOpen(null);
+              setQuery(e.target.value);
+            }}
+            placeholder="Жишээ: H08a, Communities, Дорнод"
+          />
+        </label>
+        <label className={`${dash.locationField} ${styles.scopeField}`}>
           <span>
             <Icon name="pin" size={14} />
             Хамрах хүрээ
@@ -249,7 +274,6 @@ export default function Atlas() {
           title="Бүх шүүлтүүрийг цэвэрлэх"
         >
           <Icon name="reset" size={15} />
-          Цэвэрлэх
         </button>
       </div>
     </header>
@@ -283,9 +307,11 @@ export default function Atlas() {
           items={items}
           aimags={manifest?.aimags ?? {}}
           heading={
-            filters.mode === "hz"
-              ? `Аюулын бүсчлэл · ${scopeName}`
-              : `${topicName} · ${scopeName}`
+            searching
+              ? `Хайлт: “${query.trim()}” · бүх атлас`
+              : filters.mode === "hz"
+                ? `Аюулын бүсчлэл · ${scopeName}`
+                : `${topicName} · ${scopeName}`
           }
           status={
             error
@@ -308,7 +334,8 @@ export default function Atlas() {
           {error
             ? "Атлас ачаалагдсангүй"
             : manifest
-              ? `${manifest.items.length} газрын зураг`
+              ? `${manifest.items.length + local.length} газрын зураг` +
+                (local.length ? ` (${local.length} нь таны оруулсан)` : "")
               : "Ачаалж байна…"}
         </span>
         <span>

@@ -45,7 +45,20 @@ export const MODES: { id: Mode; label: string }[] = [
   { id: "exp", label: "Өртөх байдал" },
 ];
 
-export const matchesMode = (kind: AtlasItem["kind"], mode: Mode) =>
+/** Header search: every word must appear in the map's title or file name. */
+export function matchesSearch(
+  item: Pick<AtlasItem, "title" | "file">,
+  query: string,
+): boolean {
+  const text = `${item.title} ${item.file}`.toLowerCase();
+  return query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((w) => text.includes(w));
+}
+
+export const matchesMode =(kind: AtlasItem["kind"], mode: Mode) =>
   mode === "hz" ? kind === "hz" : kind === mode || kind === "expvul";
 
 /** Same order as the risk map's hazard list (wildfire first). */

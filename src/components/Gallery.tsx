@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { hazardLabel, type AtlasItem } from "@/lib/atlas";
 import Icon from "./Icon";
 import dash from "./Dashboard.module.css";
@@ -24,6 +25,9 @@ export default function Gallery({
   onOpen,
   onDelete,
 }: Props) {
+  /** Map whose delete is waiting for "Тийм". */
+  const [confirming, setConfirming] = useState<string | null>(null);
+
   return (
     <section className={`${dash.panel} ${styles.gallery}`} aria-label="Газрын зургууд">
       <header className={styles.galleryHead}>
@@ -76,16 +80,47 @@ export default function Gallery({
                   </span>
                 </span>
               </button>
-              {item.local && (
+              {item.local && confirming !== item.id && (
                 <button
                   type="button"
                   className={styles.cardDelete}
-                  onClick={() => onDelete(item.id)}
+                  onClick={() => setConfirming(item.id)}
                   aria-label={`Устгах: ${item.title}`}
                   title="Устгах"
                 >
-                  <Icon name="close" size={14} />
+                  <Icon name="trash" size={14} />
                 </button>
+              )}
+              {item.local && confirming === item.id && (
+                <div
+                  className={styles.confirmDelete}
+                  role="alertdialog"
+                  aria-label={`${item.title} — устгах уу?`}
+                  onKeyDown={(e) => e.key === "Escape" && setConfirming(null)}
+                >
+                  <strong>Устгах уу?</strong>
+                  <span>Энэ зураг бүр мөсөн устна.</span>
+                  <div>
+                    <button
+                      type="button"
+                      className={styles.confirmNo}
+                      onClick={() => setConfirming(null)}
+                      autoFocus
+                    >
+                      Үгүй
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.confirmYes}
+                      onClick={() => {
+                        setConfirming(null);
+                        onDelete(item.id);
+                      }}
+                    >
+                      Тийм, устгах
+                    </button>
+                  </div>
+                </div>
               )}
             </li>
           ))}
