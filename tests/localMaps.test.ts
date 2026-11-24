@@ -58,3 +58,18 @@ test("toAtlasItem marks the map as a local Mongolian map", () => {
     },
   );
 });
+
+test("newId works without crypto.randomUUID (plain-http LAN origin)", async () => {
+  const { newId } = await import("../src/lib/localMaps.ts");
+  const orig = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(crypto), "randomUUID");
+  Object.defineProperty(crypto, "randomUUID", { value: undefined, configurable: true });
+  try {
+    const a = newId();
+    const b = newId();
+    assert.match(a, /^local-[0-9a-f]{32}$/);
+    assert.notEqual(a, b);
+  } finally {
+    delete (crypto as unknown as Record<string, unknown>).randomUUID;
+    if (orig) assert.equal(typeof crypto.randomUUID, "function");
+  }
+});

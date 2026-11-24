@@ -53,6 +53,15 @@ export function toAtlasItem(
   };
 }
 
+/**
+ * A new map id. Uses getRandomValues, which (unlike randomUUID) also works
+ * on plain-http origins such as the dev server opened over the LAN.
+ */
+export function newId(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  return `local-${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+
 const DB = "nema-atlas";
 const STORE = "maps";
 
@@ -101,7 +110,7 @@ export async function addLocalMap(
 ): Promise<LocalMapRecord> {
   const rec: LocalMapRecord = {
     ...meta,
-    id: `local-${crypto.randomUUID()}`,
+    id: newId(),
     file: file.name,
     blob: file,
     modified: Date.now(),
