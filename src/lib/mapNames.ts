@@ -1,4 +1,5 @@
 import type { AtlasItem } from "./atlas";
+import type { LocalMapMeta } from "./localMaps";
 
 /**
  * Where an atlas map belongs, read from its file name (and optional tags).
@@ -230,3 +231,26 @@ export function parseMapName(item: MapNameInput): Parsed | null {
   };
 }
 
+
+/**
+ * Where an uploaded file belongs: read from its name like a portal map, or
+ * the user's manual choice (`fallback`) when the name isn't recognised.
+ */
+export function classify(
+  fileName: string,
+  fallback: LocalMapMeta,
+): LocalMapMeta & { auto: boolean } {
+  const stem = fileName.replace(/\.[^.]+$/, "");
+  const p = parseMapName({ id: "", title: stem, name: fileName, tags: [], modified: 0 });
+  if (!p) return { ...fallback, title: fallback.title || stem, lang: "mn", unit: null, auto: false };
+  return {
+    title: p.title,
+    kind: p.kind,
+    topic: p.topic,
+    hazard: p.hazard,
+    scope: p.scope,
+    lang: p.lang,
+    unit: p.unit,
+    auto: true,
+  };
+}

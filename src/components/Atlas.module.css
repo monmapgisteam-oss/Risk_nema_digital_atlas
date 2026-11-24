@@ -138,6 +138,44 @@
 .dropZone span {
   font-size: 11px;
 }
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  list-style: none;
+}
+.fileList li {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid #e8edf2;
+  border-radius: 6px;
+  background: #fafbfc;
+}
+.fileList strong {
+  overflow: hidden;
+  color: #1b344c;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fileAuto,
+.fileManual {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+}
+.fileAuto {
+  color: #2e7d4f;
+}
+.fileManual {
+  color: #a5671f;
+}
 .dialogRow {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -73,3 +73,35 @@ test("newId works without crypto.randomUUID (plain-http LAN origin)", async () =
     if (orig) assert.equal(typeof crypto.randomUUID, "function");
   }
 });
+
+const fallback = {
+  title: "",
+  kind: "vul" as const,
+  topic: "household",
+  hazard: null,
+  scope: "Tuv",
+};
+
+test("classify reads the map's place from a recognised file name", async () => {
+  const { classify } = await import("../src/lib/mapNames.ts");
+  const c = classify("Exp1.10_Communities_SH-DZ_EL345_bySoum_Provincial_Dornod.png", fallback);
+  assert.deepEqual(
+    { auto: c.auto, kind: c.kind, topic: c.topic, hazard: c.hazard, scope: c.scope, unit: c.unit, lang: c.lang },
+    { auto: true, kind: "exp", topic: "communities", hazard: "dz", scope: "Dornod", unit: "сумаар", lang: "en" },
+  );
+});
+
+test("classify falls back to the manual choice for an unknown name", async () => {
+  const { classify } = await import("../src/lib/mapNames.ts");
+  const c = classify("photo.final.png", fallback);
+  assert.deepEqual(c, { ...fallback, title: "photo.final", lang: "mn", unit: null, auto: false });
+});
+
+test("toAtlasItem keeps an English map's language and unit", () => {
+  const it = toAtlasItem(
+    { id: "local-2", file: "a.png", title: "A", kind: "exp", topic: "communities",
+      hazard: "dz", scope: "MN", modified: 1, lang: "en", unit: "сумаар" },
+    "blob:y",
+  );
+  assert.deepEqual({ lang: it.lang, en: it.en, mn: it.mn, unit: it.unit }, { lang: "en", en: true, mn: true, unit: "сумаар" });
+});

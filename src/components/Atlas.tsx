@@ -70,7 +70,7 @@ export default function Atlas() {
       const r = recs[recs.length - 1];
       setOpen(null);
       setFilters({
-        mode: r.kind,
+        mode: r.kind === "expvul" ? "exp" : r.kind,
         topic: r.kind === "hz" ? "" : r.topic,
         hazard: r.hazard ?? "all",
         scope: r.scope,

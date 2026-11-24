@@ -6,10 +6,13 @@ import type { AtlasItem } from "./atlas";
  */
 export type LocalMapMeta = {
   title: string;
-  kind: "hz" | "vul" | "exp";
+  kind: AtlasItem["kind"];
   topic: string;
   hazard: string | null;
   scope: string;
+  /** Read from the file name; older records have neither (= "mn", null). */
+  lang?: "mn" | "en";
+  unit?: string | null;
 };
 
 export type LocalMapRecord = LocalMapMeta & {
@@ -34,17 +37,19 @@ export function toAtlasItem(
   r: Omit<LocalMapRecord, "blob">,
   url: string,
 ): AtlasItem {
+  const lang = r.lang ?? "mn";
   return {
     id: r.id,
     topic: r.topic,
     kind: r.kind,
     hazard: r.hazard,
     scope: r.scope,
-    lang: "mn",
+    lang,
+    // Always shown: the user added it on purpose.
     mn: true,
-    en: false,
+    en: lang === "en",
     title: r.title,
-    unit: null,
+    unit: r.unit ?? null,
     file: r.file,
     img: url,
     thumb: url,
