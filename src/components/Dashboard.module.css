@@ -1053,12 +1053,24 @@
   color: #a9b8c8;
 }
 .toolbar .locationField select,
+.toolbar .locationField input,
 .toolbar .soumButton {
   height: 30px;
   font-size: 11px;
   border-color: #ffffff2e;
   background: #ffffff12;
   color: #fff;
+}
+.toolbar .locationField input {
+  /* Light clear (×) button on the dark header. */
+  color-scheme: dark;
+}
+.toolbar .locationField input::placeholder {
+  color: #8fa1b4;
+}
+.toolbar .locationField input:focus {
+  border-color: #a9b8c8;
+  outline: none;
 }
 .toolbar .locationField select option {
   color: var(--fg);
