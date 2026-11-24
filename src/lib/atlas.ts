@@ -20,6 +20,8 @@ export type AtlasItem = {
   img: string;
   thumb: string;
   modified: number;
+  /** Added from the user's computer (lib/localMaps.ts). */
+  local?: boolean;
 };
 
 export type AtlasTopic = {
