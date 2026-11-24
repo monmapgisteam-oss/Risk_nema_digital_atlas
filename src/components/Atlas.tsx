@@ -33,7 +33,7 @@ export type AtlasFilters = {
   topic: string;
   /** "all" or a hazard id. */
   hazard: string;
-  /** "MN" national, "all" every aimag, or one aimag key. */
+  /** "MN" national or "aimag" (every aimag). */
   scope: string;
 };
 
@@ -76,7 +76,7 @@ export default function Atlas() {
         mode: r.kind === "expvul" ? "exp" : r.kind,
         topic: r.kind === "hz" ? "" : r.topic,
         hazard: r.hazard ?? "all",
-        scope: r.scope,
+        scope: r.scope === "MN" ? "MN" : "aimag",
       });
     },
     [toEntry],
@@ -147,13 +147,6 @@ export default function Atlas() {
       ),
     [manifest, local, topic, filters.mode],
   );
-  const aimags = useMemo(() => {
-    const keys = new Set(base.map((i) => i.scope).filter((s) => s !== "MN"));
-    return Object.entries(manifest?.aimags ?? {})
-      .filter(([k]) => keys.has(k))
-      .sort((a, b) => a[1].localeCompare(b[1], "mn"));
-  }, [base, manifest]);
-
   const searching = query.trim() !== "";
   const items = useMemo(
     () =>
@@ -165,10 +158,7 @@ export default function Atlas() {
         : base.filter(
             (i) =>
               (filters.hazard === "all" || i.hazard === filters.hazard) &&
-              (filters.scope === "all" ||
-                (filters.scope === "aimag"
-                  ? i.scope !== "MN"
-                  : i.scope === filters.scope)),
+              (filters.scope === "aimag" ? i.scope !== "MN" : i.scope === "MN"),
           )
       ).sort(compareItems),
     [searching, query, manifest, local, base, filters.hazard, filters.scope],
@@ -190,13 +180,7 @@ export default function Atlas() {
     MODES.find((m) => m.id === filters.mode)?.label ??
     "";
   const scopeName =
-    filters.scope === "MN"
-      ? "Улсын хэмжээ"
-      : filters.scope === "all"
-        ? "Улс ба аймгууд"
-        : filters.scope === "aimag"
-          ? "Бүх аймаг"
-          : (manifest?.aimags[filters.scope] ?? filters.scope);
+    filters.scope === "aimag" ? "Аймгийн хэмжээнд" : "Улсын хэмжээнд";
 
   const toolbar = (
     <header className={dash.toolbar}>
@@ -242,18 +226,8 @@ export default function Atlas() {
             value={filters.scope}
             onChange={(e) => update({ scope: e.target.value })}
           >
-            <option value="MN">Улсын хэмжээ</option>
-            <option value="aimag">Бүх аймаг</option>
-            <option value="all">Улс ба аймгууд</option>
-            {aimags.length > 0 && (
-              <optgroup label="Аймаг">
-                {aimags.map(([key, name]) => (
-                  <option key={key} value={key}>
-                    {name}
-                  </option>
-                ))}
-              </optgroup>
-            )}
+            <option value="MN">Улсын хэмжээнд</option>
+            <option value="aimag">Аймгийн хэмжээнд</option>
           </select>
         </label>
         <button
