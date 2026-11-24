@@ -1,15 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   MODES,
   compareItems,
   hazardLabel,
   matchesMode,
+  type AtlasItem,
   type Manifest,
   type Mode,
 } from "@/lib/atlas";
+import {
+  deleteLocalMap,
+  listLocalMaps,
+  toAtlasItem,
+  type LocalMapRecord,
+} from "@/lib/localMaps";
 import Icon from "./Icon";
 import PanelResizer from "./PanelResizer";
 import AtlasPanel from "./AtlasPanel";
@@ -28,6 +35,8 @@ export type AtlasFilters = {
   scope: string;
 };
 
+type LocalEntry = { rec: LocalMapRecord; item: AtlasItem };
+
 const START: AtlasFilters = {
   mode: "hz",
   topic: "",
@@ -42,6 +51,46 @@ export default function Atlas() {
   const [open, setOpen] = useState<number | null>(null);
   const [leftW, setLeftW] = useState<number | null>(null);
   const [headerSlot] = useState(() => document.getElementById("header-slot"));
+  /** Maps added from this computer, with object URLs of their files. */
+  const [local, setLocal] = useState<LocalEntry[]>([]);
+  const urls = useRef(new Map<string, string>());
+
+  const toEntry = useCallback((rec: LocalMapRecord): LocalEntry => {
+    const url = URL.createObjectURL(rec.blob);
+    urls.current.set(rec.id, url);
+    return { rec, item: toAtlasItem(rec, url) };
+  }, []);
+
+  /** Shows maps just saved by the upload dialog. */
+  const addLocal = useCallback(
+    (recs: LocalMapRecord[]) =>
+      setLocal((cur) => [...cur, ...recs.map(toEntry)]),
+    [toEntry],
+  );
+
+  const removeLocal = useCallback(async (id: string) => {
+    try {
+      await deleteLocalMap(id);
+    } catch {
+      return;
+    }
+    const url = urls.current.get(id);
+    if (url) URL.revokeObjectURL(url);
+    urls.current.delete(id);
+    setOpen(null);
+    setLocal((cur) => cur.filter((l) => l.rec.id !== id));
+  }, []);
+
+  useEffect(() => {
+    let live = true;
+    listLocalMaps().then((recs) => live && setLocal(recs.map(toEntry)));
+    const map = urls.current;
+    return () => {
+      live = false;
+      map.forEach((url) => URL.revokeObjectURL(url));
+      map.clear();
+    };
+  }, [toEntry]);
 
   useEffect(() => {
     let live = true;
@@ -75,14 +124,14 @@ export default function Atlas() {
   /** Maps of the view and element, before the hazard and place filters. */
   const base = useMemo(
     () =>
-      (manifest?.items ?? []).filter(
+      [...(manifest?.items ?? []), ...local.map((l) => l.item)].filter(
         (i) =>
           i.topic === topic &&
           matchesMode(i.kind, filters.mode) &&
           // Mongolian map where there is one, otherwise the English one.
           i.mn,
       ),
-    [manifest, topic, filters.mode],
+    [manifest, local, topic, filters.mode],
   );
   const aimags = useMemo(() => {
     const keys = new Set(base.map((i) => i.scope).filter((s) => s !== "MN"));
@@ -225,6 +274,7 @@ export default function Atlas() {
                 : null
           }
           onOpen={setOpen}
+          onDelete={removeLocal}
         />
       </div>
       <footer className={dash.footer}>

@@ -109,7 +109,50 @@
   outline: 2px solid #b58c42;
   outline-offset: 2px;
 }
+/* Maps added from this computer: badge + delete button. */
+.cardItem {
+  position: relative;
+}
+.localBadge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: #b58c42;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+.cardDelete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e1e8f0;
+  border-radius: 6px;
+  background: #ffffffe6;
+  color: #5b6f83;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.cardDelete:hover {
+  background: #c0392b;
+  border-color: #c0392b;
+  color: #fff;
+}
+.cardDelete:focus-visible {
+  outline: 2px solid #b58c42;
+  outline-offset: 2px;
+}
 .thumb {
+  position: relative;
   display: block;
   aspect-ratio: 1.41;
   background: #f4f6f8;

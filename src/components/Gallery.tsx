@@ -12,9 +12,18 @@ type Props = {
   /** Loading / error text instead of the grid. */
   status: string | null;
   onOpen: (index: number) => void;
+  /** Removes a map added from this computer. */
+  onDelete: (id: string) => void;
 };
 
-export default function Gallery({ items, aimags, heading, status, onOpen }: Props) {
+export default function Gallery({
+  items,
+  aimags,
+  heading,
+  status,
+  onOpen,
+  onDelete,
+}: Props) {
   return (
     <section className={`${dash.panel} ${styles.gallery}`} aria-label="Газрын зургууд">
       <header className={styles.galleryHead}>
@@ -31,7 +40,7 @@ export default function Gallery({ items, aimags, heading, status, onOpen }: Prop
       ) : (
         <ul className={styles.grid}>
           {items.map((item, i) => (
-            <li key={item.id}>
+            <li key={item.id} className={styles.cardItem}>
               <button
                 type="button"
                 className={styles.card}
@@ -47,6 +56,9 @@ export default function Gallery({ items, aimags, heading, status, onOpen }: Prop
                     loading="lazy"
                     decoding="async"
                   />
+                  {item.local && (
+                    <span className={styles.localBadge}>Таны оруулсан</span>
+                  )}
                 </span>
                 <span className={styles.cardText}>
                   <strong>{item.title}</strong>
@@ -64,6 +76,17 @@ export default function Gallery({ items, aimags, heading, status, onOpen }: Prop
                   </span>
                 </span>
               </button>
+              {item.local && (
+                <button
+                  type="button"
+                  className={styles.cardDelete}
+                  onClick={() => onDelete(item.id)}
+                  aria-label={`Устгах: ${item.title}`}
+                  title="Устгах"
+                >
+                  <Icon name="close" size={14} />
+                </button>
+              )}
             </li>
           ))}
         </ul>
